@@ -114,9 +114,10 @@ async def scrapping_data(browser, page, json_data, output_text):
     Response = []
     try:
         for index, record in enumerate(json_object):
-            print_the_output_statement(
-                output_text, f"Processing record {index + 1} out of {total_records}"
-            )
+            # print_the_output_statement(
+            #     output_text, f"Processing record {index + 1} out of {total_records}"
+            # )
+            print(f"Processing record {index + 1} out of {total_records}")
             table_data = {}  # Initialize table_data for each record
             service_number = (
                 ""
@@ -187,12 +188,12 @@ async def scrapping_data(browser, page, json_data, output_text):
 
                 else:
                     print(f"Data found for service number {service_number}")
-                    print_the_output_statement(
-                        output_text,
-                        (
-                            f"Data found for service number {service_number} and last name {last_name}"
-                        ),
-                    )
+                    # print_the_output_statement(
+                    #     output_text,
+                    #     (
+                    #         f"Data found for service number {service_number} and last name {last_name}"
+                    #     ),
+                    # )
                     # log_entry("INFO", service_number, last_name, "success")
 
                     table_data = await page.evaluate(

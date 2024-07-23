@@ -327,9 +327,15 @@ class MainWindow(QMainWindow):
         event.accept()
 
     def browser_cleanup(self):
-        if browser:
-            NEW_EVENT_LOOP.run_until_complete(browser.close())
-            print("Browser instance closed")
+        if "browser" in globals() and browser:
+            asyncio.ensure_future(self.close_browser())
+        else:
+            QCoreApplication.quit()
+
+    async def close_browser(self):
+        await browser.close()
+        print("Browser instance closed")
+        QCoreApplication.quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

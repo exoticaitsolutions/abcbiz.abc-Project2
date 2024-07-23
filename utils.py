@@ -219,9 +219,17 @@ def reformat_data(data):
         # Create a new dictionary to hold the reformatted key-value pairs
         new_entry = {}
         # Ensure all expected keys are present, with default empty strings or values
-        keys = ['expirationDate', 'lastName', 'reportDate', 'service', 'status', 'training', 'record status']
+        keys = [
+            "expirationDate",
+            "lastName",
+            "reportDate",
+            "service",
+            "status",
+            "training",
+            "record status",
+        ]
         for key in keys:
-            new_entry[key] = entry.get(key, '')
+            new_entry[key] = entry.get(key, "")
         # Append the reformatted dictionary to the list
         reformatted_data.append(new_entry)
     return reformatted_data

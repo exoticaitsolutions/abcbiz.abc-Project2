@@ -85,10 +85,20 @@ async def abiotic_login(browser, username, password, output_text):
             return False, text, "", ""
     except PyppeteerTimeoutError as timeout_error:
         print(f"timeout_error {timeout_error}")
-        return False, 'Internal Error Occurred while running application. Please Try Again!!', "", ""
+        return (
+            False,
+            "Internal Error Occurred while running application. Please Try Again!!",
+            "",
+            "",
+        )
     except pyppeteer.errors.NetworkError as NetworkError:
         print(f"NetworkError {NetworkError}")
-        return False, 'Internal Error Occurred while running application. Please Try Again!!', "", ""
+        return (
+            False,
+            "Internal Error Occurred while running application. Please Try Again!!",
+            "",
+            "",
+        )
     except Exception as e:
         # Handle exceptions gracefully
         print(f"Exception occurred during login: {e}")
@@ -100,13 +110,19 @@ async def scrapping_data(browser, page, json_data, output_text):
     print("scrapping_data")
     json_object = parse_json(json_data)
     total_records = len(json_object)
-    print_the_output_statement(output_text, f'Total Number of Records {total_records}')
+    print_the_output_statement(output_text, f"Total Number of Records {total_records}")
     Response = []
     try:
         for index, record in enumerate(json_object):
-            print_the_output_statement(output_text, f"Processing record {index + 1} out of {total_records}")
+            print_the_output_statement(
+                output_text, f"Processing record {index + 1} out of {total_records}"
+            )
             table_data = {}  # Initialize table_data for each record
-            service_number = "" if math.isnan(record.get("Server_ID", float('nan'))) else int(record["Server_ID"])
+            service_number = (
+                ""
+                if math.isnan(record.get("Server_ID", float("nan")))
+                else int(record["Server_ID"])
+            )
             last_name = record.get("Last_Name", "")
 
             if service_number and last_name:
@@ -147,24 +163,36 @@ async def scrapping_data(browser, page, json_data, output_text):
                 element_exists = await page.evaluate(check_script)
 
                 if element_exists:
-                    table_data.update({
-                        "expirationDate": "",
-                        "lastName": last_name,
-                        "reportDate": datetime.now().strftime("%Y-%m-%d"),
-                        "service": service_number,
-                        "status": '',
-                        "training": "",
-                        "record status": "No data found"
-                    })
+                    table_data.update(
+                        {
+                            "expirationDate": "",
+                            "lastName": last_name,
+                            "reportDate": datetime.now().strftime("%Y-%m-%d"),
+                            "service": service_number,
+                            "status": "",
+                            "training": "",
+                            "record status": "No data found",
+                        }
+                    )
                     Response.append(table_data)
                     # log_entry("ERROR", service_number, last_name, "No data found")
-                    print_the_output_statement(output_text, (f"No Data found for service number {service_number} and last name {last_name}"))
+                    print_the_output_statement(
+                        output_text,
+                        (
+                            f"No Data found for service number {service_number} and last name {last_name}"
+                        ),
+                    )
                     # print(
                     #     f"There are no records by selected search parameters for service number {service_number} and last name {last_name}")
 
                 else:
                     print(f"Data found for service number {service_number}")
-                    print_the_output_statement(output_text, (f"Data found for service number {service_number} and last name {last_name}"))
+                    print_the_output_statement(
+                        output_text,
+                        (
+                            f"Data found for service number {service_number} and last name {last_name}"
+                        ),
+                    )
                     # log_entry("INFO", service_number, last_name, "success")
 
                     table_data = await page.evaluate(
@@ -186,28 +214,39 @@ async def scrapping_data(browser, page, json_data, output_text):
                     )
 
                     if table_data:
-                        table_data.update({
-                            "reportDate": datetime.now().strftime("%Y-%m-%d"),
-                            "lastName": last_name,
-                            "record status": "success"
-                        })
+                        table_data.update(
+                            {
+                                "reportDate": datetime.now().strftime("%Y-%m-%d"),
+                                "lastName": last_name,
+                                "record status": "success",
+                            }
+                        )
                         Response.append(table_data)
 
-                await page.waitForXPath('//button[contains(@class, "search-box-container_action-clear")]')
-                clear_button = await page.xpath('//button[contains(@class, "search-box-container_action-clear")]')
+                await page.waitForXPath(
+                    '//button[contains(@class, "search-box-container_action-clear")]'
+                )
+                clear_button = await page.xpath(
+                    '//button[contains(@class, "search-box-container_action-clear")]'
+                )
                 await clear_button[0].click()
             else:
-                table_data.update({
-                    "expirationDate": "",
-                    "lastName": last_name,
-                    "reportDate": datetime.now().strftime("%Y-%m-%d"),
-                    "service": service_number,
-                    "status": '',
-                    "training": "",
-                    "record status": "Invalid Data "
-                })
+                table_data.update(
+                    {
+                        "expirationDate": "",
+                        "lastName": last_name,
+                        "reportDate": datetime.now().strftime("%Y-%m-%d"),
+                        "service": service_number,
+                        "status": "",
+                        "training": "",
+                        "record status": "Invalid Data ",
+                    }
+                )
                 Response.append(table_data)
-                print_the_output_statement(output_text, f'Server ID or Last name is missing for last name {last_name}')
+                print_the_output_statement(
+                    output_text,
+                    f"Server ID or Last name is missing for last name {last_name}",
+                )
     except PyppeteerTimeoutError as timeout_error:
         print(f"Timeout error: {timeout_error}")
     except pyppeteer.errors.NetworkError as network_error:

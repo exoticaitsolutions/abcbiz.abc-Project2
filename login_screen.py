@@ -105,13 +105,13 @@ class Worker(QObject):
         super().__init__()
 
     def run_login_thread(
-            self,
-            loop,
-            browser,
-            username,
-            password,
-            output_text,
-            scrape_thread_event,
+        self,
+        loop,
+        browser,
+        username,
+        password,
+        output_text,
+        scrape_thread_event,
     ):
         """
         Runs the login operation in the given asyncio event loop.
@@ -137,7 +137,7 @@ class Worker(QObject):
         scrape_thread_event.set()
 
     def run_scrapp_thread(
-            self, loop, browser, page, json_data_str, output_text, scrape_thread_event
+        self, loop, browser, page, json_data_str, output_text, scrape_thread_event
     ):
         """
         Runs the scraping operation in the given asyncio event loop.
@@ -450,16 +450,21 @@ class MainWindow(QMainWindow):
             )
 
     def closed_window(self):
-        reply = QMessageBox.question(self, 'Message', 'Are you sure you want to exit?',
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(
+            self,
+            "Message",
+            "Are you sure you want to exit?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
         if reply == QMessageBox.Yes:
             QCoreApplication.instance().quit()
             asyncio.ensure_future(self.close_browser())
 
     async def close_browser(self):
 
-        if 'browser' in globals():
-            print('browser')
+        if "browser" in globals():
+            print("browser")
             await browser.close()
             self.close()
 

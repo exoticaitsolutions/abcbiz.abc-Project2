@@ -9,13 +9,13 @@ def pyppeteerBrowserInit(loop):
     Initializes a Pyppeteer browser instance with specified settings.
     Args:
         loop (asyncio.AbstractEventLoop): The asyncio event loop to be used for launching the browser.
-        
+
     Returns:
-        pyppeteer.browser.Browser or (None, None): Returns the initialized browser instance if successful; 
+        pyppeteer.browser.Browser or (None, None): Returns the initialized browser instance if successful;
                                                    otherwise, returns (None, None) if an error occurs.
-        
+
     Raises:
-        Exception: If there is an error while initializing the browser.  
+        Exception: If there is an error while initializing the browser.
     """
     executable_path = find_chrome_path()
     print("executable_path", executable_path)

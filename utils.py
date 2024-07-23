@@ -17,6 +17,7 @@ import shutil
 from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtWidgets import QMessageBox
 import pandas as pd
+from PyQt5.QtGui import QTextCursor
 
 
 def create_directory(folder_path):
@@ -138,6 +139,7 @@ async def page_load(page, pageurl):
 def print_the_output_statement(output, message):
     output.append(f"<b>{message}</b> \n \n")
     # Print the message to the console
+    output.moveCursor(QTextCursor.End)
     print(message)
 
 

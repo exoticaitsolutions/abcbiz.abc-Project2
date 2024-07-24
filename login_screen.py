@@ -241,14 +241,15 @@ class MainWindow(QMainWindow):
     def on_scrapping_finished(self, status, scrapping_status):
         if status:
             print_the_output_statement(self.output_text, f"Scraping completed.")
-            print('scrapping_status', scrapping_status)
-            options = QFileDialog.Options()
+            # print('scrapping_status', scrapping_status)
+
+            options = QFileDialog.Options(    )
             folder_path = QFileDialog.getExistingDirectory(
                 self, "Select Directory", options=options
             )
             if folder_path:
                 reformatted = reformat_data(scrapping_status)
-
+                # print('reformatted', reformatted)
                 outputfile = f"{folder_path}/{FILE_NAME}_generate_report_{CURRENT_DATE.strftime('%Y-%B-%d')}.{FILE_TYPE}"
                 print("outputfile", outputfile)
                 convert_into_csv_and_save(reformatted, outputfile)
@@ -293,6 +294,7 @@ class MainWindow(QMainWindow):
         self.scrap_data_button.setEnabled(False)
         if file_path:
             csv_header, json_data_str, num_records = xlsx_to_json(file_path)
+            print('json_data_str', )
             if num_records > 0:
                 print("json data is found")
                 # Missing Headers

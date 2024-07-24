@@ -241,6 +241,7 @@ class MainWindow(QMainWindow):
     def on_scrapping_finished(self, status, scrapping_status):
         if status:
             print_the_output_statement(self.output_text, f"Scraping completed.")
+            print('scrapping_status', scrapping_status)
             options = QFileDialog.Options()
             folder_path = QFileDialog.getExistingDirectory(
                 self, "Select Directory", options=options
@@ -292,20 +293,66 @@ class MainWindow(QMainWindow):
         self.scrap_data_button.setEnabled(False)
         if file_path:
             csv_header, json_data_str, num_records = xlsx_to_json(file_path)
-            self.worker.scrapping_finished.connect(self.on_scrapping_finished)
+            if num_records > 0:
+                print("json data is found")
+                # Missing Headers
+                missing_headers = [
+                    header
+                    for header in ["Server_ID", "Last_Name"]
+                    if header not in csv_header
+                ]
+                if missing_headers:
+                    print("missing the headers ")
+                    self.upload_csv_button.setEnabled(True)
+                    self.scrap_data_button.setEnabled(False)
+                    show_message_box(
+                        self,
+                        QMessageBox.Warning,
+                        "File Error",
+                        "missing the header in the csv please choose the correct excel file",
+                    )
+                else:
+                    print("missing the headers ")
+                    self.worker = Worker()
+                    self.worker.scrapping_finished.connect(self.on_scrapping_finished)
+                    scrape_thread = Thread(
+                        target=self.worker.run_scrapp_thread,
+                        args=(
+                            NEW_EVENT_LOOP,
+                            browser,
+                            page,
+                            json_data_str,
+                            self.output_text,
+                            THREAD_EVENT,
+                        ),
+                    )
+                    scrape_thread.start()
+                
 
-            scrape_thread = Thread(
-                target=self.worker.run_scrapp_thread,
-                args=(
-                    NEW_EVENT_LOOP,
-                    browser,
-                    page,
-                    json_data_str,
-                    self.output_text,
-                    THREAD_EVENT,
-                ),
-            )
-            scrape_thread.start()
+            else:
+                self.upload_csv_button.setEnabled(True)
+                self.scrap_data_button.setEnabled(False)
+                print("json data is not Found")
+                show_message_box(
+                    self,
+                    QMessageBox.Warning,
+                    "File Error",
+                    "Excel is empty please choose another Excel sheet",
+                )
+            # self.worker.scrapping_finished.connect(self.on_scrapping_finished)
+
+            # scrape_thread = Thread(
+            #     target=self.worker.run_scrapp_thread,
+            #     args=(
+            #         NEW_EVENT_LOOP,
+            #         browser,
+            #         page,
+            #         json_data_str,
+            #         self.output_text,
+            #         THREAD_EVENT,
+            #     ),
+            # )
+            # scrape_thread.start()
         else:
             show_message_box(self, QMessageBox.Warning, "File Error", "File not found.")
 

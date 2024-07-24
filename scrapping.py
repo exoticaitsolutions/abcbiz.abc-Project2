@@ -13,6 +13,7 @@ async def abiotic_login(browser, username, password, output_text):
     await stealth(page)
     await page.setViewport({"width": WIDTH, "height": HEIGHT})
     Response = ""
+    # return True, Response, browser, page
     try:
         print_the_output_statement(output_text, f"Logging in to the website {LOGINURL}")
         load_page = await page_load(page, LOGINURL)
@@ -124,7 +125,12 @@ async def scrapping_data(browser, page, json_data, output_text):
                 if math.isnan(record.get("Server_ID", float("nan")))
                 else int(record["Server_ID"])
             )
-            last_name = record.get("Last_Name", "")
+            last_name = (
+                ""
+                if math.isnan(record.get("Server_ID", float("nan")))
+                else str(record["Last_Name"])
+            )
+            # last_name = record.get("Last_Name", "")
 
             if service_number and last_name:
                 last_name_xpath = '//*[@id="lastName"]'
@@ -246,7 +252,7 @@ async def scrapping_data(browser, page, json_data, output_text):
                 Response.append(table_data)
                 print_the_output_statement(
                     output_text,
-                    f"Server ID or Last name is missing for last name {last_name}",
+                    f"Server ID or Last name is missing",
                 )
     except PyppeteerTimeoutError as timeout_error:
         print(f"Timeout error: {timeout_error}")

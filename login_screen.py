@@ -61,6 +61,7 @@ QTextEdit {
 }
 """
 
+
 class Worker(QObject):
     login_finished = pyqtSignal(bool, str)
     scrapping_finished = pyqtSignal(bool, list)
@@ -95,6 +96,7 @@ class Worker(QObject):
         self.scrapping_finished.emit(status, scrapping_status)
         scrape_thread_event.set()
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -114,21 +116,21 @@ class MainWindow(QMainWindow):
         app_title_label = QLabel(f"<h1>{APP_NAME}</h1>")
         app_title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(app_title_label)
-        
+
         font = QFont()
         font.setBold(True)
-        
+
         form_layout = QVBoxLayout()
         form_layout.addSpacing(20)
         layout.addLayout(form_layout)
-        
+
         form_layout.addWidget(QLabel("<b>Enter the username and email address:</b>"))
         self.username_field = QLineEdit()
         self.username_field.setPlaceholderText("Enter the username and email address")
         self.username_field.setFont(font)
         self.username_field.setStyleSheet("height: 20px;")
         form_layout.addWidget(self.username_field)
-        
+
         form_layout.addWidget(QLabel("<b>Enter the password:</b>"))
         self.password_field = QLineEdit()
         self.password_field.setEchoMode(QLineEdit.Password)
@@ -139,7 +141,7 @@ class MainWindow(QMainWindow):
 
         button_layout = QHBoxLayout()
         form_layout.addLayout(button_layout)
-        
+
         self.login_button = QPushButton("Login")
         self.login_button.setFont(font)
         self.login_button.clicked.connect(self.login_function)
@@ -243,7 +245,7 @@ class MainWindow(QMainWindow):
             print_the_output_statement(self.output_text, f"Scraping completed.")
             # print('scrapping_status', scrapping_status)
 
-            options = QFileDialog.Options(    )
+            options = QFileDialog.Options()
             folder_path = QFileDialog.getExistingDirectory(
                 self, "Select Directory", options=options
             )
@@ -294,7 +296,9 @@ class MainWindow(QMainWindow):
         self.scrap_data_button.setEnabled(False)
         if file_path:
             csv_header, json_data_str, num_records = xlsx_to_json(file_path)
-            print('json_data_str', )
+            print(
+                "json_data_str",
+            )
             if num_records > 0:
                 print("json data is found")
                 # Missing Headers
@@ -329,7 +333,6 @@ class MainWindow(QMainWindow):
                         ),
                     )
                     scrape_thread.start()
-                
 
             else:
                 self.upload_csv_button.setEnabled(True)
@@ -385,6 +388,7 @@ class MainWindow(QMainWindow):
         await browser.close()
         print("Browser instance closed")
         QCoreApplication.quit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

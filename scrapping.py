@@ -108,33 +108,34 @@ async def abiotic_login(browser, username, password, output_text):
 
 
 async def scrapping_data(browser, page, json_data, output_text):
-
     json_object = parse_json(json_data)
     total_records = len(json_object)
     print_the_output_statement(output_text, f"Total Number of Records {total_records}")
     response = []
-
     try:
         for index, record in enumerate(json_object):
-            print(f"Processing record {index + 1} out of {total_records}")
+            # print(f"Processing record {index + 1} out of {total_records}")
+            print_the_output_statement(
+                output_text, f"Processing record {index + 1} out of {total_records}"
+            )
             table_data = {}
-            service_number = parse_value(record.get("Server_ID", ""), 'service_number')
-            last_name = parse_value(record.get("Last_Name", ""), 'last_name')
-            serveics_names = str(service_number) if service_number else ""
+            service_number = parse_value(record.get("Server_ID", ""), "service_number")
+            last_name = parse_value(record.get("Last_Name", ""), "last_name")
+            service_names = str(service_number) if service_number else ""
             if service_number and last_name:
                 server_id_element = await page.xpath('//*[@id="serverId"]')
                 last_name_element = await page.xpath('//*[@id="lastName"]')
-                search_button_element = await page.xpath('//*[@id="root"]/div/div[3]/div/div[2]/div[2]/div[1]/div[2]/div/div/div/div/div[2]/button[2]/span[1]')
+                search_button_element = await page.xpath(
+                    '//*[@id="root"]/div/div[3]/div/div[2]/div[2]/div[1]/div[2]/div/div/div/div/div[2]/button[2]/span[1]'
+                )
                 if server_id_element and last_name_element and search_button_element:
-                    await server_id_element[0].type(serveics_names)
+                    await server_id_element[0].type(service_names)
                     await last_name_element[0].type(str(last_name))
                     await search_button_element[0].click()
-
                     await asyncio.sleep(5)
                     viewport_height = await page.evaluate("window.innerHeight")
                     scroll_distance = int(viewport_height * 0.2)
                     await page.evaluate(f"window.scrollBy(0, {scroll_distance})")
-
                     check_script = """
                     () => {
                         const div = document.querySelector('div.sc-gAnuJb.gzDMq');
@@ -148,26 +149,26 @@ async def scrapping_data(browser, page, json_data, output_text):
                     }
                     """
                     element_exists = await page.evaluate(check_script)
-
                     if element_exists:
-                        table_data.update({
-                            "Expiration Date": "",
-                            "Last Name": last_name,
-                            "Report Date": datetime.now().strftime("%Y-%m-%d"),
-                            "Server ID": service_number,
-                            "Status": "",
-                            "Training Received": "",
-                            "Record Status": "No data found",
-                        })
+                        table_data.update(
+                            {
+                                "Expiration Date": "",
+                                "Last Name": last_name,
+                                "Report Date": datetime.now().strftime("%Y-%m-%d"),
+                                "Server ID": service_number,
+                                "Status": "",
+                                "Training Received": "",
+                                "Record Status": "No data found",
+                            }
+                        )
                         print_the_output_statement(
-                        output_text,
-                        (
-                            f"No Data found for service number {service_number} and last name {last_name}"
-                        ),
-                    )
+                            output_text,
+                            f"No Data found for service number {service_number} and last name {last_name}",
+                        )
                     else:
                         print(f"Data found for service number {service_number}")
-                        table_data = await page.evaluate("""
+                        table_data = await page.evaluate(
+                            """
                         () => {
                             const selectors = {
                                 "Name": '#root > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div > div > div:nth-child(1) > div > div:nth-child(1) > div > div > p > span',
@@ -183,37 +184,48 @@ async def scrapping_data(browser, page, json_data, output_text):
                             }
                             return data;
                         }
-                        """)
-                        table_data.update({
-                            "Report Date": datetime.now().strftime("%Y-%m-%d"),
-                            "Last Name": last_name,
-                            "Record Status": "success",
-                        })
+                        """
+                        )
+                        table_data.update(
+                            {
+                                "Report Date": datetime.now().strftime("%Y-%m-%d"),
+                                "Last Name": last_name,
+                                "Record Status": "success",
+                            }
+                        )
                         response.append(table_data)
+                        print_the_output_statement(
+                            output_text,
+                            f"Data found for service number {service_number} and {last_name}",
+                        )
 
-                    await page.waitForXPath('//button[contains(@class, "search-box-container_action-clear")]')
-                    clear_button = await page.xpath('//button[contains(@class, "search-box-container_action-clear")]')
+                    await page.waitForXPath(
+                        '//button[contains(@class, "search-box-container_action-clear")]'
+                    )
+                    clear_button = await page.xpath(
+                        '//button[contains(@class, "search-box-container_action-clear")]'
+                    )
                     await clear_button[0].click()
-                    print('Cleared the search form')
+                    print("Cleared the search form by clicked the clear button ")
                 else:
                     print("Failed to find one or more elements on the page")
             else:
-                print("Server ID or Last name is missing")
-                table_data.update({
-                    "Expiration Date": "",
-                    "Last Name": last_name,
-                    "Report Date": datetime.now().strftime("%Y-%m-%d"),
-                    "Server ID": service_number,
-                    "Status": "",
-                    "Training Received": "",
-                    "Record Status": "Invalid Data",
-                })
+                table_data.update(
+                    {
+                        "Expiration Date": "",
+                        "Last Name": last_name,
+                        "Report Date": datetime.now().strftime("%Y-%m-%d"),
+                        "Server ID": service_number,
+                        "Status": "",
+                        "Training Received": "",
+                        "Record Status": "Invalid Data",
+                    }
+                )
                 response.append(table_data)
                 print_the_output_statement(
                     output_text,
                     f"Server ID or Last name is missing",
                 )
-
     except (PyppeteerTimeoutError, pyppeteer.errors.NetworkError) as e:
         print(f"Error: {e}")
     except Exception as e:

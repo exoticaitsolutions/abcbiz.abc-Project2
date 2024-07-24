@@ -136,6 +136,7 @@ async def page_load(page, pageurl):
     # Check response status using ternary operators
     return False if response.status in [404, 403] else True
 
+
 def print_the_output_statement(output, message):
     output.append(f"<b>{message}</b> \n \n")
     # Print the message to the console
@@ -220,12 +221,12 @@ def reformat_data(data):
         new_entry = {}
         # Ensure all expected keys are present, with default empty strings or values
         #   "Expiration Date": "",
-                        # "Last Name": last_name,
-                        # "Report Date": datetime.now().strftime("%Y-%m-%d"),
-                        # "Server ID": service_number,
-                        # "Status": "",
-                        # "Training Received": "",
-                        # "record status": "Invalid Data ",
+        # "Last Name": last_name,
+        # "Report Date": datetime.now().strftime("%Y-%m-%d"),
+        # "Server ID": service_number,
+        # "Status": "",
+        # "Training Received": "",
+        # "record status": "Invalid Data ",
         keys = [
             "Expiration Date",
             "Last Name",
@@ -241,12 +242,13 @@ def reformat_data(data):
         reformatted_data.append(new_entry)
     return reformatted_data
 
+
 def parse_value(value, value_type):
-    if value_type == 'service_number':
+    if value_type == "service_number":
         if isinstance(value, str) and value.isdigit():
             return int(value)
         elif isinstance(value, (int, float)) and not math.isnan(value):
             return int(value)
-    elif value_type == 'last_name':
+    elif value_type == "last_name":
         return "" if isinstance(value, float) and math.isnan(value) else str(value)
     return ""

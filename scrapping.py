@@ -161,6 +161,7 @@ async def scrapping_data(browser, page, json_data, output_text):
                                 "Record Status": "No data found",
                             }
                         )
+                        response.append(table_data)
                         print_the_output_statement(
                             output_text,
                             f"No Data found for service number {service_number} and last name {last_name}",

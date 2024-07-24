@@ -269,7 +269,7 @@ class MainWindow(QMainWindow):
                     self,
                     QMessageBox.Warning,
                     "error",
-                    "data successfully found succssfully but failed to the saved the data",
+                    "data successfully found successfully but failed to the saved the data",
                 )
             self.upload_csv_button.setEnabled(False)
             self.scrap_data_button.setEnabled(False)
@@ -333,7 +333,6 @@ class MainWindow(QMainWindow):
                         ),
                     )
                     scrape_thread.start()
-
             else:
                 self.upload_csv_button.setEnabled(True)
                 self.scrap_data_button.setEnabled(False)
@@ -344,20 +343,6 @@ class MainWindow(QMainWindow):
                     "File Error",
                     "Excel is empty please choose another Excel sheet",
                 )
-            # self.worker.scrapping_finished.connect(self.on_scrapping_finished)
-
-            # scrape_thread = Thread(
-            #     target=self.worker.run_scrapp_thread,
-            #     args=(
-            #         NEW_EVENT_LOOP,
-            #         browser,
-            #         page,
-            #         json_data_str,
-            #         self.output_text,
-            #         THREAD_EVENT,
-            #     ),
-            # )
-            # scrape_thread.start()
         else:
             show_message_box(self, QMessageBox.Warning, "File Error", "File not found.")
 

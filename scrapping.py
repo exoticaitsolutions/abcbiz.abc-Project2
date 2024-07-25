@@ -6,7 +6,9 @@ import asyncio
 import pyppeteer
 import math
 from pyppeteer_stealth import stealth
-
+import threading
+import traceback
+import sys
 
 async def abiotic_login(browser, username, password, output_text):
     page = await browser.newPage()  # type: ignore
@@ -76,7 +78,6 @@ async def abiotic_login(browser, username, password, output_text):
                     target_element = await page.xpath(target_element_xpath)
                     await target_element[0].click()
                     await asyncio.sleep(10)
-                    print("nexe button .....2")
                     Response = f"Login Successfully with username={username}"
                     return True, Response, browser, page
         else:
@@ -110,14 +111,14 @@ async def abiotic_login(browser, username, password, output_text):
 async def scrapping_data(browser, page, json_data, output_text):
     json_object = parse_json(json_data)
     total_records = len(json_object)
-    print_the_output_statement(output_text, f"Total Number of Records {total_records}")
+    # print_the_output_statement(output_text, f"Total Number of Records {total_records}")
     response = []
     try:
         for index, record in enumerate(json_object):
             # print(f"Processing record {index + 1} out of {total_records}")
-            print_the_output_statement(
-                output_text, f"Processing record {index + 1} out of {total_records}"
-            )
+            # print_the_output_statement(
+            #     output_text, f"Processing record {index + 1} out of {total_records}"
+            # )
             table_data = {}
             service_number = parse_value(record.get("Server_ID", ""), "service_number")
             last_name = parse_value(record.get("Last_Name", ""), "last_name")
@@ -132,7 +133,7 @@ async def scrapping_data(browser, page, json_data, output_text):
                     await server_id_element[0].type(service_names)
                     await last_name_element[0].type(str(last_name))
                     await search_button_element[0].click()
-                    await asyncio.sleep(5)
+                    await asyncio.sleep(2)
                     viewport_height = await page.evaluate("window.innerHeight")
                     scroll_distance = int(viewport_height * 0.2)
                     await page.evaluate(f"window.scrollBy(0, {scroll_distance})")
@@ -162,12 +163,13 @@ async def scrapping_data(browser, page, json_data, output_text):
                             }
                         )
                         response.append(table_data)
-                        print_the_output_statement(
-                            output_text,
-                            f"No Data found for service number {service_number} and last name {last_name}",
-                        )
+                        print(f"No Data found for record # {index + 1}, server_id {service_number} and last name {last_name}")
+                        # print_the_output_statement(
+                        #     output_text,
+                        #     f"No Data found for service number {service_number} and last name {last_name}",
+                        # )
                     else:
-                        print(f"Data found for service number {service_number}")
+                        print(f"Data found for record # {index + 1}, server_id {service_number}")
                         table_data = await page.evaluate(
                             """
                         () => {
@@ -195,10 +197,10 @@ async def scrapping_data(browser, page, json_data, output_text):
                             }
                         )
                         response.append(table_data)
-                        print_the_output_statement(
-                            output_text,
-                            f"Data found for service number {service_number} and {last_name}",
-                        )
+                        # print_the_output_statement(
+                        #     output_text,
+                        #     f"Data found for service number {service_number} and {last_name}",
+                        # )
 
                     await page.waitForXPath(
                         '//button[contains(@class, "search-box-container_action-clear")]'
@@ -207,7 +209,8 @@ async def scrapping_data(browser, page, json_data, output_text):
                         '//button[contains(@class, "search-box-container_action-clear")]'
                     )
                     await clear_button[0].click()
-                    print("Cleared the search form by clicked the clear button ")
+                    # print("Cleared the search form by clicked the clear button ")
+                    dump_threads(r"C:\Users\rohit\OneDrive\Desktop\login_screen\thread.txt")
                 else:
                     print("Failed to find one or more elements on the page")
             else:
@@ -223,10 +226,11 @@ async def scrapping_data(browser, page, json_data, output_text):
                     }
                 )
                 response.append(table_data)
-                print_the_output_statement(
-                    output_text,
-                    f"Server ID or Last name is missing",
-                )
+                print(f"Invalid Data, for record # {index + 1}, Server ID or Last name is missing")
+                # print_the_output_statement(
+                #     output_text,
+                #     f"Server ID or Last name is missing",
+                # )
     except (PyppeteerTimeoutError, pyppeteer.errors.NetworkError) as e:
         print(f"Error: {e}")
     except Exception as e:
@@ -235,3 +239,19 @@ async def scrapping_data(browser, page, json_data, output_text):
         await browser.close()
 
     return True, response
+
+
+def dump_threads(file_path):
+    id_to_name = {th.ident: th.name for th in threading.enumerate()}
+    code = []
+    for thread_id, stack in sys._current_frames().items():
+        code.append("\n# Thread: %s(%d)" % (id_to_name.get(thread_id, ""), thread_id))
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+    
+    with open(file_path, 'a') as f:
+        f.write("\n".join(code))
+        f.write("\n\n")  # Add a couple of new lines for separation between dumps
+

@@ -296,11 +296,7 @@ class MainWindow(QMainWindow):
         self.scrap_data_button.setEnabled(False)
         if file_path:
             csv_header, json_data_str, num_records = xlsx_to_json(file_path)
-            print(
-                "json_data_str",
-            )
             if num_records > 0:
-                print("json data is found")
                 # Missing Headers
                 missing_headers = [
                     header
@@ -308,7 +304,6 @@ class MainWindow(QMainWindow):
                     if header not in csv_header
                 ]
                 if missing_headers:
-                    print("missing the headers ")
                     self.upload_csv_button.setEnabled(True)
                     self.scrap_data_button.setEnabled(False)
                     show_message_box(

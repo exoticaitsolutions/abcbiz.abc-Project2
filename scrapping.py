@@ -210,7 +210,6 @@ async def scrapping_data(browser, page, json_data, output_text):
                     )
                     await clear_button[0].click()
                     # print("Cleared the search form by clicked the clear button ")
-                    dump_threads(r"C:\Users\rohit\OneDrive\Desktop\login_screen\thread.txt")
                 else:
                     print("Failed to find one or more elements on the page")
             else:
@@ -239,19 +238,3 @@ async def scrapping_data(browser, page, json_data, output_text):
         await browser.close()
 
     return True, response
-
-
-def dump_threads(file_path):
-    id_to_name = {th.ident: th.name for th in threading.enumerate()}
-    code = []
-    for thread_id, stack in sys._current_frames().items():
-        code.append("\n# Thread: %s(%d)" % (id_to_name.get(thread_id, ""), thread_id))
-        for filename, lineno, name, line in traceback.extract_stack(stack):
-            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
-            if line:
-                code.append("  %s" % (line.strip()))
-    
-    with open(file_path, 'a') as f:
-        f.write("\n".join(code))
-        f.write("\n\n")  # Add a couple of new lines for separation between dumps
-

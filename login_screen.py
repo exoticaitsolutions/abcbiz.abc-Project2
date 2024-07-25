@@ -313,7 +313,6 @@ class MainWindow(QMainWindow):
                         "missing the header in the csv please choose the correct excel file",
                     )
                 else:
-                    print("missing the headers ")
                     self.worker = Worker()
                     self.worker.scrapping_finished.connect(self.on_scrapping_finished)
                     scrape_thread = Thread(
